@@ -1,6 +1,7 @@
 import ort from "onnxruntime-node" ;
 import fs from "fs" ;
 import apiResponse from "../utils/apiResponse.js";
+import asyncHandler from "../utils/asyncHandler.js";
 
 function hashingVectorizer(text, nFeatures = 321) {
     const vector = new Array(nFeatures).fill(0);
