@@ -3,7 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import apiResponse from "../utils/apiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
-import crypto from "crypto"; // Add missing import for crypto
+import crypto from "crypto"; // Correctly imported
 
 // Convert import.meta.url to __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
@@ -24,23 +24,23 @@ function hashingVectorizer(text, nFeatures = 321) {
 
 const predictor = asyncHandler(async (req, res) => {
     try {
-        const modelPath = path.resolve(__dirname, '../../ingredient_compatibility_model.onnx');
-        const session = await ort.InferenceSession.create(modelPath);
+        const { ingredients } = req.body;
 
-        let newIngredients = req.body.newIngredients; 
-
-        console.log(newIngredients)
-        
-        newIngredients = new onnxruntimeBackend.Tensor(newIngredients, 'string', 3) ;
-        
-        console.log(newIngredients)
-        if (!newIngredients) {
+        if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
+            console.log("hello hello")
             return res.status(400).json(
-                new apiResponse(400, null, "Missing newIngredients in request")
+                new apiResponse(400, null, "Missing or invalid 'ingredients' in request")
             );
         }
 
-        const hashedVector = hashingVectorizer(newIngredients);
+        // Join ingredients into a single string for hashing
+        const joinedIngredients = ingredients.join(" ");
+
+        // Preprocess the input
+        const hashedVector = hashingVectorizer(joinedIngredients);
+
+        const modelPath = path.resolve(__dirname, '../../ingredient_compatibility_model.onnx');
+        const session = await ort.InferenceSession.create(modelPath);
 
         // Define the input tensor
         const inputTensor = new ort.Tensor('float32', hashedVector, [1, 321]); // [1, 321] is the input shape
@@ -50,12 +50,12 @@ const predictor = asyncHandler(async (req, res) => {
         const results = await session.run(feeds);
 
         // Extract and print the prediction
-        const prediction = results.output; // Ensure 'output' matches your model's actual output key
+        const prediction = results; // Ensure 'output' matches your model's actual output key
 
-        console.log(prediction);
+        // console.log(prediction['label']['cpuData']);
 
         return res.status(200).json(
-            new apiResponse(200, prediction, "Ingredient compatibility prediction")
+            new apiResponse(200, prediction['label']['cpuData'], "Ingredient compatibility prediction")
         );
     } catch (error) {
         console.error("Error during prediction:", error);

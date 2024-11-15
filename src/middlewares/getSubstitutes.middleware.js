@@ -1,11 +1,11 @@
 import axios from "axios";
 const getSubstituteIngredient = (req, res, next) => {
-    const { entity_id } = req.entityData.entity_id; 
+    const entity_id = req.entity_id; 
 
     var config = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: `https://cosylab.iiitd.edu.in/api/foodPairingAnalysis/{{entity_id}}`,
+        url: `https://cosylab.iiitd.edu.in/api/foodPairingAnalysis/${entity_id}`,
         headers: {}
     };
 
