@@ -88,6 +88,7 @@ const signOut = asyncHandler(async (req, res) => {
 const signIn = asyncHandler(async (req, res) => {
 
     const { email, password } = req.body ;
+    console.log (email)
 
     if (!email) {
         throw new apiError(400, "Email is required");
