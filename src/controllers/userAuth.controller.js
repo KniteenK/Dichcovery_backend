@@ -1,5 +1,5 @@
 import { user } from "../models/user.model.js";
-import asyncHandler from "../utils/asyncHandler.js";
+import asyncHandler from "../utils/asyncHandler.js";;
 import {apiError} from "../utils/apiError.js";
 import apiResponse from "../utils/apiResponse.js";
 
@@ -79,6 +79,7 @@ const signOut = asyncHandler(async (req, res) => {
 const signIn = asyncHandler(async (req, res) => {
 
     const { email, password } = req.body ;
+    console.log (email)
 
     if (!email) {
         throw new apiError(400, "Email is required");
@@ -125,7 +126,5 @@ const signIn = asyncHandler(async (req, res) => {
 
 
 export {
-    signUp,
-    signOut,
-    signIn
-}
+    signIn, signOut, signUp
+};
