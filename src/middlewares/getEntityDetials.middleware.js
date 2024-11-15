@@ -2,17 +2,18 @@ import axios from "axios";
 
 const getEntityDetails = async (req, res, next) => {
     try {
-        const { category_name, entity_name } = req.query;
+        const {ingredient } = req.body;
 
         var config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: `https://cosylab.iiitd.edu.in/api/entity/getentities?category=${category_name}&name=${entity_name}`,
+            url: `https://cosylab.iiitd.edu.in/api/entity/getentities?name=${ingredient}`,
             headers: {}
         };
 
         const response = await axios(config);
-        req.entityData = response.data; 
+        req.entity_id = response.data[0]['entity_id']; 
+        console.log(req.entity_id) ;
         next(); 
     } catch (error) {
         console.error(error);
