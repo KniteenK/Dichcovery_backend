@@ -1,7 +1,10 @@
 import app from './app.js' ;
+import connectDB from './db/database.db.js';
 
 
 const port = process.env.PORT || 5000 ;
+
+connectDB() ;
 
 app.get('/', (req, res) => {
     res.send('Hello World!') ;
