@@ -13,4 +13,6 @@ router.route('/signIn').post (signIn) ;
 
 router.route('getSubstitute').post (getEntityDetails, getSubstituteIngredient, webResults) ;
 
+router.route('')
+
 export default router ;
