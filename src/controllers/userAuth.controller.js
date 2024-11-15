@@ -39,8 +39,8 @@ const signUp = asyncHandler ( async (req , res) => {
             age,
             allergies,
             region: {
-                city,
-                country,
+                continent,
+                subRegion,
             },
         }) ;
     
@@ -48,16 +48,16 @@ const signUp = asyncHandler ( async (req , res) => {
             throw new Error("Failed to create user") ;
         }
         
-        const accessToken = isClient.generateAccessToken()
-        const refreshToken = isClient.generateRefreshToken()
-        isClient.accessToken = accessToken
-        isClient.save({ validateBeforeSave: false })
+        const accessToken = isUser.generateAccessToken()
+        const refreshToken = isUser.generateRefreshToken()
+        isUser.accessToken = accessToken
+        isUser.save({ validateBeforeSave: false })
 
 
         // console.log(isClient)
     
         return res.status(201).json(
-            new apiResponse(200 , {isClient , accessToken , refreshToken} , "User created successfully") 
+            new apiResponse(200 , {isUser , accessToken , refreshToken} , "User created successfully") 
         )
 
     } catch (error) {
@@ -85,8 +85,57 @@ const signOut = asyncHandler(async (req, res) => {
     .json(new apiResponse(200, {}, "User logged Out Successfully"))
 });
 
+const signIn = asyncHandler(async (req, res) => {
+
+    const { email, password } = req.body ;
+
+    if (!email) {
+        throw new apiError(400, "Email is required");
+    }
+
+    const query = email 
+
+    const User = await user.findOne(query);
+
+    // Check password validity
+    const isPasswordCorrect = await User.isPasswordCorrect(password);
+
+    if (!isPasswordCorrect) {
+        throw new apiError(401, "Invalid password");
+    }
+
+    try {
+        // Generate access and refresh tokens
+        const accessToken = await user.generateAccessToken();
+        const refreshToken = await user.generateRefreshToken();
+
+        // Save refreshToken in the user document
+        User.refreshToken = refreshToken;
+        await User.save({ validateBeforeSave: false });
+
+        // Select the necessary user fields, omitting sensitive data
+        const userData = await user.findById(user._id).select(
+                "-password -refreshToken"
+            );
+
+        return res.status(200)
+            .json(
+                new apiResponse(200, {
+                    userData,
+                    accessToken,
+                    refreshToken,
+                    role
+                }, "User logged in successfully")
+            );
+
+    } catch (error) {
+        throw new apiError(500, error.message || "Some error occurred while logging in");
+    }
+});
+
 
 export {
     signUp,
-    signOut
+    signOut,
+    signIn
 }
