@@ -1,6 +1,7 @@
 import { user } from "../models/user.model.js";
-import asyncHandler from "../utils/asyncHandler.js"
-
+import asyncHandler from "../utils/asyncHandler.js";
+import {apiError} from "../utils/apiError.js";
+import apiResponse from "../utils/apiResponse.js";
 
 const signUp = asyncHandler ( async (req , res) => {
     try {
@@ -20,16 +21,6 @@ const signUp = asyncHandler ( async (req , res) => {
         if (isExisting) {
             throw new Error("User already exists") ;
         } ;
-    
-        // const coverImageLocalPath = req.files?.coverImage?.[0]?.path ;
-    
-        // let uploadedCoverImage;
-        // if (coverImageLocalPath) {
-        //     uploadedCoverImage = await uploadOnCloudinary(coverImageLocalPath);
-        //     if (!uploadedCoverImage) {
-        //         throw new apiError(500, "Failed to upload cover image");
-        //     }
-        // }
         
         const isUser = await user.create({
             username,
@@ -93,7 +84,7 @@ const signIn = asyncHandler(async (req, res) => {
         throw new apiError(400, "Email is required");
     }
 
-    const query = email 
+    const query = {email }
 
     const User = await user.findOne(query);
 
@@ -106,15 +97,15 @@ const signIn = asyncHandler(async (req, res) => {
 
     try {
         // Generate access and refresh tokens
-        const accessToken = await user.generateAccessToken();
-        const refreshToken = await user.generateRefreshToken();
+        const accessToken = await User.generateAccessToken();
+        const refreshToken = await User.generateRefreshToken();
 
         // Save refreshToken in the user document
         User.refreshToken = refreshToken;
         await User.save({ validateBeforeSave: false });
 
         // Select the necessary user fields, omitting sensitive data
-        const userData = await user.findById(user._id).select(
+        const userData = await user.findById(User._id).select(
                 "-password -refreshToken"
             );
 
@@ -124,7 +115,6 @@ const signIn = asyncHandler(async (req, res) => {
                     userData,
                     accessToken,
                     refreshToken,
-                    role
                 }, "User logged in successfully")
             );
 

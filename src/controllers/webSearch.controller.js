@@ -1,10 +1,13 @@
 import Groq from "groq-sdk";
-import asyncHandler from "../utils/asyncHandler";
+import asyncHandler from "../utils/asyncHandler.js";
+import { configDotenv } from "dotenv";
+
+configDotenv()
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 
-const webresults = asyncHandler( async (req, res) => {
+const webResults = asyncHandler( async (req, res) => {
     const {query} = req.query;
     try {
         const finalResult = await groq.chat.completions.create({
@@ -22,3 +25,5 @@ const webresults = asyncHandler( async (req, res) => {
         throw new apiError("Groq API error: ", error);
     }
 })
+
+export default webResults;
