@@ -12,6 +12,7 @@ const getSubstituteIngredient = (req, res, next) => {
     axios(config)
         .then(function (response) {
             req.entityData = response.data;
+            req.query = `Suggest healthier ingredients for ${response.data.entity_alias} from ${response.data}`
             next();
         })
         .catch(function (error) {
