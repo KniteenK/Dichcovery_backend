@@ -7,8 +7,8 @@ const searchRecipes = async (req, res) => {
         continent = "",
         region = "",
         recipeTitle = "",
-        // ingredientUsed = "",
-        // ingredientNotUsed = "",
+        cookingProcess = "",
+        utensil = "",
         energyMin = 0,
         energyMax = 0,
         carbohydratesMin = 0,
@@ -23,18 +23,16 @@ const searchRecipes = async (req, res) => {
         continent,
         region,
         recipeTitle,
-        // ingredientUsed,
-        // ingredientNotUsed,
         cookingProcess,
         utensil,
-        energyMin,
-        energyMax,
-        carbohydratesMin,
-        carbohydratesMax,
-        fatMin,
-        fatMax,
-        proteinMin,
-        proteinMax
+        energyMin: Math.max(0, energyMin),
+        energyMax: Math.max(0, energyMax),
+        carbohydratesMin: Math.max(0, carbohydratesMin),
+        carbohydratesMax: Math.max(0, carbohydratesMax),
+        fatMin: Math.max(0, fatMin),
+        fatMax: Math.max(0, fatMax),
+        proteinMin: Math.max(0, proteinMin),
+        proteinMax: Math.max(0, proteinMax)
     };
 
     const config = {
@@ -49,6 +47,7 @@ const searchRecipes = async (req, res) => {
 
     try {
         const response = await axios(config);
+        console.log(response) ;
         return res.status(200).json({
             message: "Search results retrieved successfully",
             data: response.data
