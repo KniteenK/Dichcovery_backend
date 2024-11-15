@@ -1,5 +1,5 @@
 import { user } from "../models/user.model.js";
-import asyncHandler from "../utils/asyncHandler.js"
+import asyncHandler from "../utils/asyncHandler.js";
 
 
 const signUp = asyncHandler ( async (req , res) => {
@@ -136,7 +136,5 @@ const signIn = asyncHandler(async (req, res) => {
 
 
 export {
-    signUp,
-    signOut,
-    signIn
-}
+    signIn, signOut, signUp
+};
