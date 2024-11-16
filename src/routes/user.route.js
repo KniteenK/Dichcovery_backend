@@ -6,6 +6,7 @@ import webResults from '../controllers/webSearch.controller.js';
 import compatibilityPredictor from "../controllers/compatibilityPredictor.controller.js"
 import getSubstitute from '../controllers/getSubstitutes.controller.js';
 import mealRecommendor from '../controllers/mealRecommendor.controller.js';
+import advSearch from '../controllers/filteredSearch.controller.js';
 
 const router = new express.Router();
 
@@ -19,5 +20,7 @@ router.route('/getSubstitute').post (getEntityDetails, getSubstitute) ;
 router.route('/compatibilityPredictor').post (compatibilityPredictor) ;
 
 router.route('/mealRecommendation').post (mealRecommendor) ;
+
+router.route('/advSearch').post (advSearch) ;
 
 export default router ;
