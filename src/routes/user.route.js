@@ -20,4 +20,6 @@ router.route('/compatibilityPredictor').post (compatibilityPredictor) ;
 
 router.route('/mealRecommendation').post (mealRecommendor) ;
 
+router.route('/webSearch'). post (webResults) ;
+
 export default router ;
