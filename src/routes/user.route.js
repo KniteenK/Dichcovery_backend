@@ -5,6 +5,7 @@ import getSubstituteIngredient from '../middlewares/getSubstitutes.middleware.js
 import webResults from '../controllers/webSearch.controller.js'; 
 import compatibilityPredictor from "../controllers/compatibilityPredictor.controller.js"
 import getSubstitute from '../controllers/getSubstitutes.controller.js';
+import mealRecommendor from '../controllers/mealRecommendor.controller.js';
 
 const router = new express.Router();
 
@@ -16,5 +17,7 @@ router.route('/signIn').post (signIn) ;
 router.route('/getSubstitute').post (getEntityDetails, getSubstitute) ;
 
 router.route('/compatibilityPredictor').post (compatibilityPredictor) ;
+
+router.route('/mealRecommendation').post (mealRecommendor) ;
 
 export default router ;
