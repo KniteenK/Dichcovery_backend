@@ -30,7 +30,8 @@ const searchRecipes = async (req, res) => {
         maxBodyLength: Infinity,
         url: 'https://cosylab.iiitd.edu.in/recipe-search/recipesAdvanced?page=1&pageSize=10',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'x-API-key': process.env.X_API_KEY
         },
         data: requestData
     };

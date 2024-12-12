@@ -22,7 +22,10 @@ const searchRecipes = async (req, res) => {
     const requestData = {
         continent,
         region,
+        subregion: "",
         recipeTitle,
+        ingredientUsed: "",
+        ingredientNotUsed: "",
         cookingProcess,
         utensil,
         energyMin: Math.max(0, energyMin),
@@ -40,7 +43,8 @@ const searchRecipes = async (req, res) => {
         maxBodyLength: Infinity,
         url: 'https://cosylab.iiitd.edu.in/recipe-search/recipesAdvanced?page=1&pageSize=10',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'x-API-key': process.env.X_API_KEY
         },
         data: requestData
     };
@@ -53,7 +57,7 @@ const searchRecipes = async (req, res) => {
             data: response.data
         });
     } catch (error) {
-        console.error("Error fetching search results:", error);
+        console.error("Error fetching search results:", error.message);
         return res.status(500).send("Failed to fetch search results");
     }
 };

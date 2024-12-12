@@ -14,7 +14,7 @@ const openai = new OpenAI({
   apiKey: apikey,
   baseURL: 'https://api.x.ai/v1',
 });
-// app.post("/v1/chat/completions",
+
 const webResults = asyncHandler(async (req, res) => {
   try {
     const { messages } = req.body; // Get messages from request body
@@ -28,7 +28,6 @@ const webResults = asyncHandler(async (req, res) => {
       },
     });
 
-    // Send back the assistant's response
     res.json({
       reply: response.choices[0].message.content,
     });
@@ -39,9 +38,6 @@ const webResults = asyncHandler(async (req, res) => {
 });
 export default webResults;
 
-// app.listen(3000, () => {
-//   console.log("Server is running on http://localhost:3000");
-// });
 
 
 
