@@ -17,21 +17,22 @@ const searchRecipes = async (req, res) => {
 
 
     const mapFiltersToSearchParams = {
-        continent: selectedContinent || "",
-        region: selectedRegion || "",
-        subregion: "",
-        recipeTitle: searchTerm || "",
-        energyMin: energy,
-        energyMax: 0,
-        carbohydratesMin: carbohydrate,
+        continent: "",
+        region: "",
+        subRegion: "",
+        recipeTitle: searchTerm,
         ingredientUsed: "",
         ingredientNotUsed: "",
         cookingProcess: "",
+        utensil: "",
+        energyMin: 0,
+        energyMax: 0,
+        carbohydratesMin: 0,
         carbohydratesMax: 0,
-        proteinMin: protein,
-        proteinMax: 0,
-        fatMin: fat,
+        fatMin: 0,
         fatMax: 0,
+        proteinMin: 0,
+        proteinMax: 0
     };
 
     const config = {
@@ -46,10 +47,10 @@ const searchRecipes = async (req, res) => {
 
     try {
         const response = await axios(config);
-        console.log((response.data));
+        console.log((response.data.payload.data));
         return res.status(200).json({
             message: "Search results retrieved successfully",
-            data: response.data,
+            data: response.data.payload.data,
         });
     } catch (error) {
         console.error("Error fetching search results:", error.message);
