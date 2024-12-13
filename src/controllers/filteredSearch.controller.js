@@ -14,28 +14,31 @@ const searchRecipes = async (req, res) => {
         vegan,
     } = req.body;
 
+
+
     const mapFiltersToSearchParams = {
         continent: selectedContinent || "",
         region: selectedRegion || "",
+        subregion: "",
         recipeTitle: searchTerm || "",
-        energyMin: energy?.min || 0,
-        energyMax: energy?.max || 0,
-        carbohydratesMin: carbohydrate?.min || 0,
-        carbohydratesMax: carbohydrate?.max || 0,
-        proteinMin: protein?.min || 0,
-        proteinMax: protein?.max || 0,
-        fatMin: fat?.min || 0,
-        fatMax: fat?.max || 0,
-        vegan,
-        prepTime,
+        energyMin: energy,
+        energyMax: 0,
+        carbohydratesMin: carbohydrate,
+        ingredientUsed: "",
+        ingredientNotUsed: "",
+        cookingProcess: "",
+        carbohydratesMax: 0,
+        proteinMin: protein,
+        proteinMax: 0,
+        fatMin: fat,
+        fatMax: 0,
     };
 
     const config = {
         method: "post",
         maxBodyLength: Infinity,
-        url: "https://cosylab.iiitd.edu.in/recipe-search/recipesAdvanced?page=1&pageSize=10",
+        url: "https://cosylab.iiitd.edu.in/recipe-search/recipesAdvanced?page=1&pageSize=2",
         headers: {
-            "Content-Type": "application/json",
             "x-API-key": process.env.X_API_KEY,
         },
         data: mapFiltersToSearchParams,
@@ -43,7 +46,7 @@ const searchRecipes = async (req, res) => {
 
     try {
         const response = await axios(config);
-        console.log(response.data);
+        console.log((response.data));
         return res.status(200).json({
             message: "Search results retrieved successfully",
             data: response.data,

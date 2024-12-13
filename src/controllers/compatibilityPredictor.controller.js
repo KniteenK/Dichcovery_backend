@@ -3,9 +3,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import apiResponse from "../utils/apiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
-import crypto from "crypto"; // Correctly imported
+import crypto from "crypto";
 
-// Convert import.meta.url to __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
