@@ -7,6 +7,7 @@ import compatibilityPredictor from "../controllers/compatibilityPredictor.contro
 import getSubstitute from '../controllers/getSubstitutes.controller.js';
 import mealRecommendor from '../controllers/mealRecommendor.controller.js';
 import advSearch from '../controllers/filteredSearch.controller.js';
+import { upload } from '../middlewares/multer.middleware.js';
 
 const router = new express.Router();
 
@@ -24,5 +25,7 @@ router.route('/mealRecommendation').post (mealRecommendor) ;
 router.route('/webSearch'). post (webResults) ;
 
 router.route('/advSearch').post (advSearch) ;
+
+route.route('/guessDish'). post (upload) ;
 
 export default router ;

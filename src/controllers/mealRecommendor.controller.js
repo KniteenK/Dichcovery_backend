@@ -6,17 +6,17 @@ const searchRecipesForMeal = async (meal, reqBody) => {
     // console.log(calories)
 
     const requestData = {
-        energyMin: 0,
-        energyMax: Math.max(0, parseInt(calories)),
-        carbohydratesMin: 0,
-        carbohydratesMax: Math.max(0, parseInt(carbs)),
-        fatMin: 0,
-        fatMax: Math.max(0, parseInt(fat)),
-        proteinMin: 0,
-        proteinMax: Math.max(0, parseInt(protein))
+        energyMin: Math.max(0, parseInt(calories)),
+        energyMax: 0,
+        carbohydratesMin: Math.max(0, parseInt(carbs)),
+        carbohydratesMax: 0,
+        fatMin: Math.max(0, parseInt(fat)),
+        fatMax: 0,
+        proteinMin: Math.max(0, parseInt(protein)),
+        proteinMax: 0
     };
 
-    // console.log(JSON.stringify(requestData))
+    console.log(JSON.stringify(requestData))
 
     const config = {
         method: 'post',
@@ -31,7 +31,7 @@ const searchRecipesForMeal = async (meal, reqBody) => {
 
     try {
         const response = await axios(config);
-        // console.log(response.data.payload.data) ;
+        console.log(response.data.payload.data) ;
         return response.data.payload.data;
     } catch (error) {
         console.error("Error fetching search results for", meal, ":", error);
@@ -60,7 +60,7 @@ const searchRecipes = async (req, res) => {
         };
 
         // Return the combined response
-        console.log(combinedData);
+        // console.log(combinedData);
         return res.status(200).json({
             message: "Search results retrieved successfully",
             data: combinedData
