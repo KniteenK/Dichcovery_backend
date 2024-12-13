@@ -2,38 +2,51 @@ import fs from "fs";
 import path from "path";
 import ort from "onnxruntime-node";
 import {Jimp} from "jimp";
+import sharp from "sharp";
 import apiResponse from "../utils/apiResponse.js";
 
 const preprocessImage = async (imagePath) => {
-  try {
-      const image = await Jimp.read(imagePath);
+    try {
+        // Resize the image to 224x224 and normalize pixel values to [0, 1]
+        const imageBuffer = await sharp(imagePath)
+            .resize(224, 224)
+            .toBuffer();
 
-      // Resize the image to 224x224
-      image.resize(224, 224);
+        const image = await sharp(imageBuffer).raw().toBuffer();
+        const normalizedData = [];
 
-      // Normalize pixel values to [0, 1]
-      const normalizedData = [];
-      for (let y = 0; y < 224; y++) {
-          for (let x = 0; x < 224; x++) {
-              const { r, g, b } = Jimp.intToRGBA(image.getPixelColor(x, y)); // Get pixel color
-              normalizedData.push(r / 255, g / 255, b / 255); // Normalize each channel
-          }
-      }
+        for (let i = 0; i < image.length; i += 3) {
+            const r = image[i] / 255;
+            const g = image[i + 1] / 255;
+            const b = image[i + 2] / 255;
+            normalizedData.push(r, g, b);
+        }
 
-      // Create a Float32Array from the normalized data
-      const floatArray = Float32Array.from(normalizedData);
+        const floatArray = Float32Array.from(normalizedData);
 
-      // Create an ONNX tensor with shape [1, 3, 224, 224]
-      return new ort.Tensor("float32", floatArray, [1, 3, 224, 224]);
-  } catch (error) {
-      console.error("Error preprocessing image:", error.message);
-      throw error;
-  }
+        // Create an ONNX tensor with shape [1, 3, 224, 224]
+        return new ort.Tensor("float32", floatArray, [1, 224, 224, 3]);
+    } catch (error) {
+        console.error("Error preprocessing image:", error.message);
+        throw error;
+    }
 };
 
 const runModel = async (req, res) => {
   const imagePath = req.file.path; // Path of the uploaded image
-  const modelPath = path.resolve("../../mobilenetv2.onnx");
+  const modelPath = path.resolve("mobilenetv2.onnx");
+
+  const classMapping = [
+    'adhirasam', 'aloo_gobi', 'aloo_matar', 'aloo_methi', 'aloo_shimla_mirch', 'aloo_tikki', 'anarsa', 'ariselu', 'bandar_laddu', 'basundi',
+    'bhatura', 'bhindi_masala', 'biryani', 'boondi', 'butter_chicken', 'chak_hao_kheer', 'cham_cham', 'chana_masala', 'chapati', 'chhena_kheeri',
+    'chicken_razala', 'chicken_tikka', 'chicken_tikka_masala', 'chikki', 'daal_baati_churma', 'daal_puri', 'dal_makhani', 'dal_tadka', 'dharwad_pedha',
+    'doodhpak', 'double_ka_meetha', 'dum_aloo', 'gajar_ka_halwa', 'gavvalu', 'ghevar', 'gulab_jamun', 'imarti', 'jalebi', 'kachori', 'kadai_paneer',
+    'kadhi_pakoda', 'kajjikaya', 'kakinada_khaja', 'kalakand', 'karela_bharta', 'kofta', 'kuzhi_paniyaram', 'lassi', 'ledikeni', 'litti_chokha',
+    'lyangcha', 'maach_jhol', 'makki_di_roti_sarson_da_saag', 'malapua', 'misi_roti', 'misti_doi', 'modak', 'mysore_pak', 'naan', 'navrattan_korma',
+    'palak_paneer', 'paneer_butter_masala', 'phirni', 'pithe', 'poha', 'poornalu', 'pootharekulu', 'qubani_ka_meetha', 'rabri', 'ras_malai',
+    'rasgulla', 'sandesh', 'shankarpali', 'sheer_korma', 'sheera', 'shrikhand', 'sohan_halwa', 'sohan_papdi', 'sutar_feni', 'unni_appam'
+  ];
+  
 
   try {
       // Preprocess the image
@@ -56,32 +69,19 @@ const runModel = async (req, res) => {
 
       // Find the class index with the highest probability
       const predictedClassIndex = output.data.indexOf(Math.max(...output.data));
-      console.log("Predicted Class Index:", predictedClassIndex);
+      console.log("Predicted Class Index:", classMapping[predictedClassIndex]);
 
-      // Example: Modify the image and send it back
-      const processedImage = await Jimp.read(imagePath);
-      processedImage.greyscale(); // Example operation: Convert to greyscale
-      const processedImagePath = path.join(path.dirname(imagePath), "processed-" + path.basename(imagePath));
-      await processedImage.writeAsync(processedImagePath);
-
-      // Send the processed image as a response
-      res.sendFile(processedImagePath, (err) => {
-          if (err) {
-              console.error("Error sending file:", err.message);
-          }
-
-          // Delete both original and processed images from the server
-          fs.unlink(imagePath, (unlinkErr) => {
-              if (unlinkErr) console.error("Error deleting original image:", unlinkErr);
-          });
-
-          fs.unlink(processedImagePath, (unlinkErr) => {
-              if (unlinkErr) console.error("Error deleting processed image:", unlinkErr);
-          });
-      });
+      return res.status(200)
+      .json(
+        new apiResponse(200, { class: classMapping[predictedClassIndex] }, "Ingredient prediction")
+      )
+     
   } catch (error) {
       console.error("Error running model:", error.message);
-      return res.status(500).json(new apiResponse(500, null, "Internal server error"));
+      const output = {
+        class: classMapping[predictedClassIndex]
+      }
+      return res.status(210).json(new apiResponse(210, output, "Internal server error"));
   }
 };
 
