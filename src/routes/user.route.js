@@ -26,6 +26,6 @@ router.route('/webSearch'). post (webResults) ;
 
 router.route('/advSearch').post (advSearch) ;
 
-route.route('/guessDish'). post (upload) ;
+// route.route('/guessDish'). post (upload) ;
 
 export default router ;

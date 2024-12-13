@@ -22,7 +22,7 @@ const webResults = asyncHandler(async (req, res) => {
     const response = await openai.chat.completions.create({
       model: "grok-beta",
       messages: messages,
-      max_tokens: 100,
+      max_tokens: 200,
       headers: {
         Authorization: `Bearer ${apikey}`,
       },
