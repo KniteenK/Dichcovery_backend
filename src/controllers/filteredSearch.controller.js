@@ -1,60 +1,52 @@
 import axios from "axios";
 
 const searchRecipes = async (req, res) => {
-    const searchParams = req.body; // Expecting the request body to contain the search parameters
 
     const {
-        continent = "",
-        region = "",
-        recipeTitle = "",
-        cookingProcess = "",
-        utensil = "",
-        energyMin = 0,
-        energyMax = 0,
-        carbohydratesMin = 0,
-        carbohydratesMax = 0,
-        fatMin = 0,
-        fatMax = 0,
-        proteinMin = 0,
-        proteinMax = 0
-    } = searchParams;
+        searchTerm,
+        selectedContinent,
+        selectedRegion,
+        energy,
+        carbohydrate,
+        protein,
+        fat,
+        prepTime,
+        vegan,
+    } = req.body;
 
-    const requestData = {
-        continent,
-        region,
-        subregion: "",
-        recipeTitle,
-        ingredientUsed: "",
-        ingredientNotUsed: "",
-        cookingProcess,
-        utensil,
-        energyMin: Math.max(0, energyMin),
-        energyMax: Math.max(0, energyMax),
-        carbohydratesMin: Math.max(0, carbohydratesMin),
-        carbohydratesMax: Math.max(0, carbohydratesMax),
-        fatMin: Math.max(0, fatMin),
-        fatMax: Math.max(0, fatMax),
-        proteinMin: Math.max(0, proteinMin),
-        proteinMax: Math.max(0, proteinMax)
+    const mapFiltersToSearchParams = {
+        continent: selectedContinent || "",
+        region: selectedRegion || "",
+        recipeTitle: searchTerm || "",
+        energyMin: energy?.min || 0,
+        energyMax: energy?.max || 0,
+        carbohydratesMin: carbohydrate?.min || 0,
+        carbohydratesMax: carbohydrate?.max || 0,
+        proteinMin: protein?.min || 0,
+        proteinMax: protein?.max || 0,
+        fatMin: fat?.min || 0,
+        fatMax: fat?.max || 0,
+        vegan,
+        prepTime,
     };
 
     const config = {
-        method: 'post',
+        method: "post",
         maxBodyLength: Infinity,
-        url: 'https://cosylab.iiitd.edu.in/recipe-search/recipesAdvanced?page=1&pageSize=10',
+        url: "https://cosylab.iiitd.edu.in/recipe-search/recipesAdvanced?page=1&pageSize=10",
         headers: {
-            'Content-Type': 'application/json',
-            'x-API-key': process.env.X_API_KEY
+            "Content-Type": "application/json",
+            "x-API-key": process.env.X_API_KEY,
         },
-        data: requestData
+        data: mapFiltersToSearchParams,
     };
 
     try {
         const response = await axios(config);
-        console.log(response) ;
+        console.log(response.data);
         return res.status(200).json({
             message: "Search results retrieved successfully",
-            data: response.data
+            data: response.data,
         });
     } catch (error) {
         console.error("Error fetching search results:", error.message);

@@ -1,34 +1,27 @@
 import axios from "axios";
 
-const searchRecipes = async (req, res) => {
-    const searchParams = req.body ;
+const searchRecipesForMeal = async (meal, reqBody) => {
+    const { calories, protein, carbs, fat } = meal;
 
-    const {
-        energyMin = 0,
-        energyMax = 0,
-        carbohydratesMin = 0,
-        carbohydratesMax = 0,
-        fatMin = 0,
-        fatMax = 0,
-        proteinMin = 0,
-        proteinMax = 0
-    } = searchParams;
+    // console.log(calories)
 
     const requestData = {
-        energyMin: Math.max(0, energyMin),
-        energyMax: Math.max(0, energyMax),
-        carbohydratesMin: Math.max(0, carbohydratesMin),
-        carbohydratesMax: Math.max(0, carbohydratesMax),
-        fatMin: Math.max(0, fatMin),
-        fatMax: Math.max(0, fatMax),
-        proteinMin: Math.max(0, proteinMin),
-        proteinMax: Math.max(0, proteinMax)
+        energyMin: 0,
+        energyMax: Math.max(0, parseInt(calories)),
+        carbohydratesMin: 0,
+        carbohydratesMax: Math.max(0, parseInt(carbs)),
+        fatMin: 0,
+        fatMax: Math.max(0, parseInt(fat)),
+        proteinMin: 0,
+        proteinMax: Math.max(0, parseInt(protein))
     };
+
+    // console.log(JSON.stringify(requestData))
 
     const config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: 'https://cosylab.iiitd.edu.in/recipe-search/recipesAdvanced?page=1&pageSize=10',
+        url: 'https://cosylab.iiitd.edu.in/recipe-search/recipesAdvanced?page=1&pageSize=1',
         headers: {
             'Content-Type': 'application/json',
             'x-API-key': process.env.X_API_KEY
@@ -38,10 +31,39 @@ const searchRecipes = async (req, res) => {
 
     try {
         const response = await axios(config);
-        console.log(response) ;
+        // console.log(response.data.payload.data) ;
+        return response.data.payload.data;
+    } catch (error) {
+        console.error("Error fetching search results for", meal, ":", error);
+        throw new Error("Failed to fetch search results");
+    }
+};
+
+const searchRecipes = async (req, res) => {
+    const searchParams = req.body;
+    // console.log(req.body);
+
+    // Destructure meals from the request body
+    const { breakfast, lunch, dinner } = searchParams;
+    
+    try {
+        // Fetch recipes for breakfast, lunch, and dinner
+        const breakfastData = await searchRecipesForMeal(breakfast, searchParams);
+        const lunchData = await searchRecipesForMeal(lunch, searchParams);
+        const dinnerData = await searchRecipesForMeal(dinner, searchParams);
+
+        // Combine all the data
+        const combinedData = {
+            breakfast: breakfastData,
+            lunch: lunchData,
+            dinner: dinnerData
+        };
+
+        // Return the combined response
+        console.log(combinedData);
         return res.status(200).json({
             message: "Search results retrieved successfully",
-            data: response.data
+            data: combinedData
         });
     } catch (error) {
         console.error("Error fetching search results:", error);
