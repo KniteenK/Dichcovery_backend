@@ -21,7 +21,7 @@ const searchRecipesForMeal = async (meal, reqBody) => {
     const config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: 'https://cosylab.iiitd.edu.in/recipe-search/recipesAdvanced?page=1&pageSize=1',
+        url: 'https://cosylab.iiitd.edu.in/recipe-search/recipesAdvanced?page=1&pageSize=10',
         headers: {
             'Content-Type': 'application/json',
             'x-API-key': process.env.X_API_KEY

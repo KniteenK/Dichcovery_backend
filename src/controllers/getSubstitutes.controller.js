@@ -6,12 +6,22 @@ const getSubstituteIngredient = async (req, res) => {
     console.log(entity_id);
 
     try {
-        const response = await axios.get(`https://cosylab.iiitd.edu.in/api/foodPairingAnalysis/${entity_id}`);
+        // Define headers
+        const headers = {
+            'Content-Type': 'application/json',
+            'x-API-key': process.env.X_API_KEY
+        };
+
+        // Make API request with headers
+        const response = await axios.get(
+            `https://cosylab.iiitd.edu.in/api/foodPairingAnalysis/${entity_id}`, 
+            { headers }
+        );
 
         const fullData = response.data;
         const topSimilarEntities = fullData.similar_entities?.slice(0, 12) || []; 
 
-        console.log(topSimilarEntities)
+        console.log(topSimilarEntities);
 
         const responseData = {
             entity_alias: fullData.entity_alias,
